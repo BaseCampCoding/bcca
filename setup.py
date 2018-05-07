@@ -8,4 +8,7 @@ setup(
     install_requires=["pytest"],
     entry_points={
         'pytest11': ['bcca = bcca.pytest_plugin'],
+        'console_scripts': [
+            'what_have_i_done = bcca.what_have_i_done:main',
+        ]
     })
