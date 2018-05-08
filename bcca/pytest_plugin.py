@@ -6,14 +6,19 @@ from unittest import mock
 class FakeStringIO(StringIO):
     def __eq__(self, other):
         if isinstance(other, str):
-            return self.getvalue() == other.strip()
+            return self.getvalue().strip() == other.strip()
         else:
             return super().__eq__(other)
 
     def __repr__(self):
-        return repr(self.getvalue())
+        return repr(self.getvalue().strip())
 
 
 def pytest_assertrepr_compare(config, op, left, right):
     if isinstance(left, FakeStringIO) and isinstance(right, str) and op == '==':
-        return assertrepr_compare(config, op, left.getvalue(), right)
+        return assertrepr_compare(
+            config,
+            op,
+            left.getvalue().strip(),
+            right.strip(),
+        )
