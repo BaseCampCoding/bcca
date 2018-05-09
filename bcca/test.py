@@ -30,7 +30,30 @@ def should_print(test_function):
     return mock.patch('sys.stdout', new_callable=FakeStringIO)(test_function)
 
 def with_inputs(*inputs):
-    print(inputs)
+    '''with_inputs accepts strings to be used as user input
+
+    For example, if you had a function like this:
+
+    ```python
+    def get_age():
+        age_string = input('What is your age? ')
+        return int(age_string)
+    ```
+
+    You might want to test that it returns 27 if you give it
+    "27" as user input. To do that, you could write the following test.
+
+    ```python
+    @with_inputs('27')
+    def test_get_age():
+        assert get_age() == 27
+    ```
+
+    There are a couple pieces to this:
+        - Put `@with_inputs` directly above your test function.
+        - Provide `@with_inputs(...)` with the strings you want
+          to substitute for the user input.
+    '''
     def _inner(test_function):
         def test_ignoring_input(input, *args, **kwargs):
             return test_function(*args, **kwargs)
