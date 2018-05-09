@@ -2,7 +2,7 @@ from setuptools import setup
 
 setup(
     name="bcca",
-    version="1.4.0",
+    version="1.5.0",
     description="Helpers from Base Camp Coding Academy",
     packages=["bcca"],
     install_requires=["pytest"],
