@@ -56,3 +56,17 @@ def test_two_files():
 @fake_file({'foo.txt': 'hello\nworld'})
 def test_readline_works():
     assert open("foo.txt").readlines() == ['hello\n', 'world']
+
+
+@fake_file({'foo.txt': 'hello world'})
+def test_write_mode_works():
+    open('foo.txt', 'w').write('game over')
+
+    assert open('foo.txt').read() == 'game over'
+
+
+@fake_file({'foo.txt': 'hello world'})
+def test_append_mode_works():
+    open('foo.txt', 'a').write('game over')
+
+    assert open('foo.txt').read() == 'hello worldgame over'

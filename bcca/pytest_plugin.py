@@ -7,11 +7,26 @@ from unittest import mock
 def fake_open(file_contents):
     def _f(file, mode='r'):
         if file in file_contents:
-            return StringIO(file_contents[file])
+            if mode == 'r':
+                return StringIO(file_contents[file])
+            elif mode == 'a':
+                return FakeFileWriter(file, file_contents)
+            elif mode == 'w':
+                file_contents[file] = ''
+                return FakeFileWriter(file, file_contents)
         else:
             raise ValueError(f'You tried to open {file}, but you didn\'t fake it out!')
 
     return _f
+
+
+class FakeFileWriter:
+    def __init__(self, file, contents):
+        self.file = file
+        self.contents = contents
+
+    def write(self, s):
+        self.contents[self.file] += s
 
 
 class FakeStringIO(StringIO):
