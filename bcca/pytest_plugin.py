@@ -28,6 +28,12 @@ class FakeFileWriter:
     def write(self, s):
         self.contents[self.file] += s
 
+    def __enter__(self, *args):
+        return self
+
+    def __exit__(self, *args):
+        return self
+
 
 class FakeStringIO(StringIO):
     def __eq__(self, other):
