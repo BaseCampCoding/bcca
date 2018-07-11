@@ -1,5 +1,6 @@
 from unittest import mock
-from bcca.pytest_plugin import FakeStringIO, FakeStdIn
+from bcca.pytest_plugin import FakeStringIO, FakeStdIn, fake_open
+
 
 def should_print(test_function):
     '''should_print is a helper for testing code that uses print
@@ -29,6 +30,7 @@ def should_print(test_function):
     '''
     return mock.patch('sys.stdout', new_callable=FakeStringIO)(test_function)
 
+
 def with_inputs(*inputs):
     '''with_inputs accepts strings to be used as user input
 
@@ -54,8 +56,49 @@ def with_inputs(*inputs):
         - Provide `@with_inputs(...)` with the strings you want
           to substitute for the user input.
     '''
+
     def _inner(test_function):
         def test_ignoring_input(input, *args, **kwargs):
             return test_function(*args, **kwargs)
+
         return mock.patch('sys.stdin', new_callable=lambda: FakeStdIn(inputs))(test_ignoring_input)
+
+    return _inner
+
+
+def fake_file(file_contents):
+    '''fake_file can be used to test simple interactions with the file system.
+
+    It will intercept interactions with the provided file_name.
+
+    Optionally, you can provide second argument containing text that should
+    be "in" the file. The contents of the file defaults to the empty string
+    (an empty file).
+
+    For example, if you wanted to test some code that reads from a file:
+
+    ```python
+    def simple_read():
+        with open('my_file.txt') as f:
+           return f.read()
+    ```
+
+    You could write a test like this:
+
+    ```python
+    @fake_file({'my_file.txt': 'hello world'})
+    def test_simple_read():
+        assert simple_read() == 'hello world'
+    ```
+
+    Alternatively, if you wanted 
+    '''
+
+    def _inner(test_function):
+        @mock.patch('builtins.open', new_callable=lambda: fake_open(file_contents))
+        def test_it(fake_open, *args, **kwargs):
+            return test_function(*args, **kwargs)
+
+        return test_it
+
     return _inner

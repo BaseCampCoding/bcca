@@ -1,4 +1,6 @@
-from bcca.test import should_print, with_inputs
+from bcca.test import should_print, with_inputs, fake_file
+import pytest
+
 
 @should_print
 def test_printing_once(output):
@@ -21,6 +23,7 @@ def test_inputs():
     assert input() == 'nate'
     assert input() == 'clark'
 
+
 @should_print
 @with_inputs('Nate')
 def test_both(output):
@@ -30,3 +33,26 @@ def test_both(output):
 What is your name? Nate
 Hello, Nate
 '''
+
+
+@fake_file({'foo.txt': 'hello world'})
+def test_simple_read():
+    assert open('foo.txt').read() == 'hello world'
+
+
+@fake_file({'foo.txt': 'hello world'})
+def test_open_other_file_errors():
+    with pytest.raises(ValueError):
+        assert open('bar.txt')
+
+
+@fake_file({'foo.txt': 'hello world', 'bar.txt': 'game over'})
+def test_two_files():
+    assert open('foo.txt').read() == 'hello world'
+
+    assert open('bar.txt').read() == 'game over'
+
+
+@fake_file({'foo.txt': 'hello\nworld'})
+def test_readline_works():
+    assert open("foo.txt").readlines() == ['hello\n', 'world']
