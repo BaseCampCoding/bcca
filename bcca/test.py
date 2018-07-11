@@ -69,11 +69,8 @@ def with_inputs(*inputs):
 def fake_file(file_contents):
     '''fake_file can be used to test simple interactions with the file system.
 
-    It will intercept interactions with the provided file_name.
-
-    Optionally, you can provide second argument containing text that should
-    be "in" the file. The contents of the file defaults to the empty string
-    (an empty file).
+    It will intercept calls to `open`, and substitute file system behavior
+    based on `file_contents`.
 
     For example, if you wanted to test some code that reads from a file:
 
@@ -91,7 +88,15 @@ def fake_file(file_contents):
         assert simple_read() == 'hello world'
     ```
 
-    Alternatively, if you wanted 
+    If you wanted to write to a file, the code looks just like you would expect:
+
+    ```python
+    @fake_file({'my_file.txt': 'hello world'})
+    def test_writing():
+        with open('my_file.txt', 'w') as f:
+            f.write('good bye')
+
+        assert open('my_file.txt').read() == 'good bye'
     '''
 
     def _inner(test_function):
