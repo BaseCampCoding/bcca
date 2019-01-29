@@ -134,6 +134,12 @@ def check_expectations(function):
 
 
 def check_expectation(function, expectation_args):
+    if 'with_inputs' in expectation_args:
+        patched_stdin = mock.patch(
+            'sys.stdin',
+            new_callable=lambda: FakeStdIn(expectation_args['with_inputs']))
+        patched_stdin.start()
+
     if 'to_return' in expectation_args:
         return check_function_returns_correctly(function, expectation_args)
     elif 'to_print' in expectation_args:
@@ -141,6 +147,9 @@ def check_expectation(function, expectation_args):
     else:
         raise ValueError(
             f'Expectation didn\'t assert expect anything:\n{expectation_args}')
+
+    if 'with_inputs' in expectation_args:
+        patched_stdin.stop()
 
 
 def check_function_returns_correctly(function, expectation_args):

@@ -44,12 +44,13 @@ world''')
     assert passes_expectations(hello_world)
 
 
-# TODO: Convert these tests into @expect tests
+def test_expectation_can_assume_inputs():
+    @expect(with_inputs=['nate', 'clark'], to_return='nate clark')
+    def test_inputs():
+        return input() + ' ' + input()
 
-# @with_inputs('nate', 'clark')
-# def test_inputs():
-#     assert input() == 'nate'
-#     assert input() == 'clark'
+    assert passes_expectations(test_inputs)
+
 
 # @should_print
 # @with_inputs('Nate')
