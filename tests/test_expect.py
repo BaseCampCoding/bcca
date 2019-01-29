@@ -52,15 +52,19 @@ def test_expectation_can_assume_inputs():
     assert passes_expectations(test_inputs)
 
 
-# @should_print
-# @with_inputs('Nate')
-# def test_both(output):
-#     name = input('What is your name? ')
-#     print('Hello,', name)
-#     assert output == '''
-# What is your name? Nate
-# Hello, Nate
-# '''
+def test_expectations_can_assume_inputs_and_expect_output():
+    @expect(
+        with_inputs=['Nate'],
+        to_print='''
+What is your name? Nate
+Hello, Nate
+''')
+    def test_both():
+        name = input('What is your name? ')
+        print('Hello,', name)
+
+    assert passes_expectations(test_both)
+
 
 # @fake_file({'foo.txt': 'hello world'})
 # def test_simple_read():
