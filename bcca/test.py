@@ -139,6 +139,13 @@ def check_expectation(function, expectation_args):
             new_callable=lambda: FakeStdIn(expectation_args['with_inputs']))
         patched_stdin.start()
 
+    if 'with_fake_files' in expectation_args:
+        patched_open = mock.patch(
+            'builtins.open',
+            new_callable=lambda: fake_open(expectation_args['with_fake_files'])
+        )
+        patched_open.start()
+
     if 'to_return' in expectation_args:
         return check_function_returns_correctly(function, expectation_args)
     elif 'to_print' in expectation_args:
@@ -149,6 +156,8 @@ def check_expectation(function, expectation_args):
 
     if 'with_inputs' in expectation_args:
         patched_stdin.stop()
+    if 'with_fake_files' in expectation_args:
+        patched_open.stop()
 
 
 def check_function_returns_correctly(function, expectation_args):

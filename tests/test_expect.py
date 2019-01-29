@@ -66,9 +66,14 @@ Hello, Nate
     assert passes_expectations(test_both)
 
 
-# @fake_file({'foo.txt': 'hello world'})
-# def test_simple_read():
-#     assert open('foo.txt').read() == 'hello world'
+def test_expectations_can_stub_out_a_file():
+    @expect(
+        with_fake_files={'foo.txt': 'hello world'}, to_return='hello world')
+    def test_simple_read():
+        return open('foo.txt').read()
+
+    assert passes_expectations(test_simple_read)
+
 
 # @fake_file({'foo.txt': 'hello world'})
 # def test_open_other_file_errors():
