@@ -10,3 +10,7 @@ wheel = "*"
 click = "*"
 
 [dev-packages]
+pytest = "*"
+mypy = "*"
+pylint = "*"
+yapf = "*"
