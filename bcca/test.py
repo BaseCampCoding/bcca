@@ -119,7 +119,6 @@ def expect(**expectation_args):
             function_under_test.expectations.insert(0, expectation_args)
         else:
             function_under_test.expectations = [expectation_args]
-        function_under_test.check_expectations = lambda: True
 
         return function_under_test
 
