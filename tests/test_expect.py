@@ -34,16 +34,17 @@ def test_expect_greet_can_fail():
     assert not passes_expectations(greet)
 
 
+def test_printing_multiline():
+    @expect(to_print='''hello
+world''')
+    def hello_world():
+        print('hello')
+        print('world')
+
+    assert passes_expectations(hello_world)
+
+
 # TODO: Convert these tests into @expect tests
-# @should_print
-# @should_print
-# def test_printing_multiline(output):
-#     print('hello')
-#     print('world')
-#     assert output == '''
-# hello
-# world
-# '''
 
 # @with_inputs('nate', 'clark')
 # def test_inputs():
