@@ -61,7 +61,9 @@ def with_inputs(*inputs):
         def test_ignoring_input(input, *args, **kwargs):
             return test_function(*args, **kwargs)
 
-        return mock.patch('sys.stdin', new_callable=lambda: FakeStdIn(inputs))(test_ignoring_input)
+        return mock.patch(
+            'sys.stdin',
+            new_callable=lambda: FakeStdIn(inputs))(test_ignoring_input)
 
     return _inner
 
@@ -100,7 +102,8 @@ def fake_file(file_contents):
     '''
 
     def _inner(test_function):
-        @mock.patch('builtins.open', new_callable=lambda: fake_open(file_contents))
+        @mock.patch(
+            'builtins.open', new_callable=lambda: fake_open(file_contents))
         def test_it(fake_open, *args, **kwargs):
             return test_function(*args, **kwargs)
 
