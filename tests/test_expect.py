@@ -10,12 +10,32 @@ def test_expect_add_2_plus_2_to_return_4_passes():
     assert passes_expectations(add)
 
 
+def test_expect_add_can_fail():
+    @expect(x=2, y=2, to_return=5)
+    def add(x, y):
+        return x + y
+
+    assert not passes_expectations(add)
+
+
+def test_expect_greet_to_print_greeting():
+    @expect(name='nate', to_print='hello nate')
+    def greet(name):
+        print('hello', name)
+
+    assert passes_expectations(greet)
+
+
+def test_expect_greet_can_fail():
+    @expect(name='evil nate', to_print='hello nate')
+    def greet(name):
+        print('hello', name)
+
+    assert not passes_expectations(greet)
+
+
 # TODO: Convert these tests into @expect tests
 # @should_print
-# def test_printing_once(output):
-#     print('hello')
-#     assert output == 'hello'
-
 # @should_print
 # def test_printing_multiline(output):
 #     print('hello')

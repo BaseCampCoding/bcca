@@ -136,6 +136,8 @@ def check_expectations(function):
 def check_expectation(function, expectation_args):
     if 'to_return' in expectation_args:
         return check_function_returns_correctly(function, expectation_args)
+    elif 'to_print' in expectation_args:
+        return check_function_prints_correctly(function, expectation_args)
     else:
         raise ValueError(
             f'Expectation didn\'t assert expect anything:\n{expectation_args}')
@@ -150,6 +152,20 @@ def check_function_returns_correctly(function, expectation_args):
             'result': 'fail',
             'expected': expectation_args['to_return'],
             'actual': actual
+        }
+
+
+def check_function_prints_correctly(function, expectation_args):
+    with mock.patch('sys.stdout', new_callable=FakeStringIO) as fake_stdout:
+        function(**args_for(function, expectation_args))
+
+    if fake_stdout == expectation_args['to_print']:
+        return {'result': 'pass'}
+    else:
+        return {
+            'result': 'fail',
+            'expected': expectation_args['to_print'],
+            'actual': fake_stdout
         }
 
 
