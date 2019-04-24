@@ -46,3 +46,12 @@ def test_can_append_to_fake_file():
         return open("foo.txt").read()
 
     assert passes_expectations(test_append_mode_works)
+
+
+def test_context_manager_works_on_fake_file():
+    @expect(with_fake_files={"foo.txt": "hello world"}, to_return="hello world")
+    def test_with_statement_read_works():
+        with open("foo.txt") as f:
+            return f.read()
+
+    assert passes_expectations(test_with_statement_read_works)
