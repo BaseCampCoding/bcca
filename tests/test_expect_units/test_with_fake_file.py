@@ -55,3 +55,13 @@ def test_context_manager_works_on_fake_file():
             return f.read()
 
     assert passes_expectations(test_with_statement_read_works)
+
+
+def test_context_manager_works_for_writing_fake_file():
+    @expect(with_fake_files={"foo.txt": "hello world"}, to_return="game over")
+    def test_with_statement_write_works():
+        with open("foo.txt", "w") as f:
+            f.write("game over")
+        return open("foo.txt").read()
+
+    assert passes_expectations(test_with_statement_write_works)
