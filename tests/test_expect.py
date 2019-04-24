@@ -77,10 +77,6 @@ def test_expectations_can_stub_out_a_file():
     assert passes_expectations(test_simple_read)
 
 
-# @fake_file({'foo.txt': 'hello\nworld'})
-# def test_readline_works():
-#     assert open("foo.txt").readlines() == ['hello\n', 'world']
-
 # @fake_file({'foo.txt': 'hello world'})
 # def test_write_mode_works():
 #     open('foo.txt', 'w').write('game over')

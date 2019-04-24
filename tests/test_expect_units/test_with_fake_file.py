@@ -17,3 +17,8 @@ def test_opening_two_files():
     def two_files():
         return open("foo.txt").read() + open("bar.txt").read()
 
+
+def test_file_readlines():
+    @expect(with_fake_files={"foo.txt": "hello\nworld"}, to_return=["hello\n", "world"])
+    def test_readline_works():
+        return open("foo.txt").readlines()
