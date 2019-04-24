@@ -35,3 +35,14 @@ def test_can_write_to_existing_fake_file():
         return open("foo.txt").read()
 
     assert passes_expectations(test_write_mode_works)
+
+
+def test_can_append_to_fake_file():
+    @expect(
+        with_fake_files={"foo.txt": "hello world"}, to_return="hello worldgame over"
+    )
+    def test_append_mode_works():
+        open("foo.txt", "a").write("game over")
+        return open("foo.txt").read()
+
+    assert passes_expectations(test_append_mode_works)
