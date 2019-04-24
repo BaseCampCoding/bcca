@@ -75,3 +75,12 @@ def test_expectations_can_stub_out_a_file():
         return open("foo.txt").read()
 
     assert passes_expectations(test_simple_read)
+
+
+def test_can_have_multiple_expectations():
+    @expect(x=7, y=3, to_return=10)
+    @expect(x=-1, y=3, to_return=2)
+    def add(x, y):
+        return x + y
+
+    assert passes_expectations(add)
