@@ -78,12 +78,6 @@ def test_expectations_can_stub_out_a_file():
 
 
 # @fake_file({'foo.txt': 'hello world'})
-# def test_write_mode_works():
-#     open('foo.txt', 'w').write('game over')
-
-#     assert open('foo.txt').read() == 'game over'
-
-# @fake_file({'foo.txt': 'hello world'})
 # def test_append_mode_works():
 #     open('foo.txt', 'a').write('game over')
 

@@ -17,8 +17,21 @@ def test_opening_two_files():
     def two_files():
         return open("foo.txt").read() + open("bar.txt").read()
 
+    assert passes_expectations(two_files)
+
 
 def test_file_readlines():
     @expect(with_fake_files={"foo.txt": "hello\nworld"}, to_return=["hello\n", "world"])
     def test_readline_works():
         return open("foo.txt").readlines()
+
+    assert passes_expectations(test_readline_works)
+
+
+def test_can_write_to_existing_fake_file():
+    @expect(with_fake_files={"foo.txt": "hello world"}, to_return="game over")
+    def test_write_mode_works():
+        open("foo.txt", "w").write("game over")
+        return open("foo.txt").read()
+
+    assert passes_expectations(test_write_mode_works)
