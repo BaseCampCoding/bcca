@@ -158,8 +158,8 @@ def check_expectation(function, expectation_args):
 
     if "with_inputs" in expectation_args:
         patched_stdin.stop()
-    if "with_fake_files" in expectation_args:
-        patched_open.stop()
+        if "with_fake_files" in expectation_args:
+            patched_open.stop()
 
 
 def check_function_returns_correctly(function, expectation_args):
