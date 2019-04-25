@@ -142,16 +142,19 @@ def fake_files(files):
 def check_expectation(function, expectation_args):
     with fake_stdin(expectation_args.get("with_inputs", [])):
         with fake_files(expectation_args.get("with_fake_files", {})):
-            if "to_return" in expectation_args:
-                return check_function_returns_correctly(function, expectation_args)
-            elif "to_print" in expectation_args:
-                return check_function_prints_correctly(function, expectation_args)
-            elif "to_raise" in expectation_args:
-                return check_function_raises_correctly(function, expectation_args)
-            else:
-                raise ValueError(
-                    f"Expectation didn't assert expect anything:\n{expectation_args}"
-                )
+            with mock.patch("sys.stdout", new_callable=FakeStringIO) as fake_stdout:
+                if "to_return" in expectation_args:
+                    return check_function_returns_correctly(function, expectation_args)
+                elif "to_print" in expectation_args:
+                    return check_function_prints_correctly(
+                        function, expectation_args, fake_stdout
+                    )
+                elif "to_raise" in expectation_args:
+                    return check_function_raises_correctly(function, expectation_args)
+                else:
+                    raise ValueError(
+                        f"Expectation didn't assert expect anything:\n{expectation_args}"
+                    )
 
 
 def check_function_returns_correctly(function, expectation_args):
@@ -166,10 +169,8 @@ def check_function_returns_correctly(function, expectation_args):
         }
 
 
-def check_function_prints_correctly(function, expectation_args):
-    with mock.patch("sys.stdout", new_callable=FakeStringIO) as fake_stdout:
-        function(**args_for(function, expectation_args))
-
+def check_function_prints_correctly(function, expectation_args, fake_stdout):
+    actual = function(**args_for(function, expectation_args))
     if fake_stdout == expectation_args["to_print"]:
         return {"result": "pass"}
     else:
