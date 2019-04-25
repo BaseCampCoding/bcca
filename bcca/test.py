@@ -131,35 +131,27 @@ def check_expectations(function):
     ]
 
 
+def fake_stdin(inputs):
+    return mock.patch("sys.stdin", new_callable=lambda: FakeStdIn(inputs))
+
+
+def fake_files(files):
+    return mock.patch("builtins.open", new_callable=lambda: fake_open(files))
+
+
 def check_expectation(function, expectation_args):
-    if "with_inputs" in expectation_args:
-        patched_stdin = mock.patch(
-            "sys.stdin", new_callable=lambda: FakeStdIn(expectation_args["with_inputs"])
-        )
-        patched_stdin.start()
-
-    if "with_fake_files" in expectation_args:
-        patched_open = mock.patch(
-            "builtins.open",
-            new_callable=lambda: fake_open(expectation_args["with_fake_files"]),
-        )
-        patched_open.start()
-
-    if "to_return" in expectation_args:
-        return check_function_returns_correctly(function, expectation_args)
-    elif "to_print" in expectation_args:
-        return check_function_prints_correctly(function, expectation_args)
-    elif "to_raise" in expectation_args:
-        return check_function_raises_correctly(function, expectation_args)
-    else:
-        raise ValueError(
-            f"Expectation didn't assert expect anything:\n{expectation_args}"
-        )
-
-    if "with_inputs" in expectation_args:
-        patched_stdin.stop()
-        if "with_fake_files" in expectation_args:
-            patched_open.stop()
+    with fake_stdin(expectation_args.get("with_inputs", [])):
+        with fake_files(expectation_args.get("with_fake_files", {})):
+            if "to_return" in expectation_args:
+                return check_function_returns_correctly(function, expectation_args)
+            elif "to_print" in expectation_args:
+                return check_function_prints_correctly(function, expectation_args)
+            elif "to_raise" in expectation_args:
+                return check_function_raises_correctly(function, expectation_args)
+            else:
+                raise ValueError(
+                    f"Expectation didn't assert expect anything:\n{expectation_args}"
+                )
 
 
 def check_function_returns_correctly(function, expectation_args):
