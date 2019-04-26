@@ -42,6 +42,9 @@ class FakeStringIO(StringIO):
         else:
             return super().__eq__(other)
 
+    def __str__(self):
+        return self.getvalue().strip()
+
     def __repr__(self):
         return repr(self.getvalue().strip())
 

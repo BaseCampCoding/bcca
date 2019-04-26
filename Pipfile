@@ -8,6 +8,7 @@ pytest = "*"
 twine = "*"
 wheel = "*"
 click = "*"
+colorama = "*"
 
 [dev-packages]
 pytest = "*"

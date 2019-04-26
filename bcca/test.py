@@ -1,6 +1,11 @@
 from unittest import mock
 from bcca.pytest_plugin import FakeStringIO, FakeStdIn, fake_open
 from inspect import signature
+from pathlib import Path
+from importlib import import_module
+import sys
+import click
+from colorama import Fore, init
 
 
 def should_print(test_function):
@@ -204,3 +209,63 @@ def passes_expectations(function):
     return all(
         expectation["result"] == "pass" for expectation in check_expectations(function)
     )
+
+
+def tested_functions(module):
+    return [
+        getattr(module, name)
+        for name in dir(module)
+        if hasattr(getattr(module, name), "expectations")
+    ]
+
+
+def expectation_string(expectation, func):
+    call_string = f"{func.__name__}({', '.join(f'{param}={arg!r}' for param, arg in args_for(func, expectation).items())}) "
+    if "to_return" in expectation:
+        return call_string + f"== {expectation['to_return']}"
+    elif "to_print" in expectation:
+        return call_string + f"should print:\n{expectation['to_print'].strip()}"
+
+
+def failed_expectation_message(expectation, result):
+    if "to_return" in expectation:
+        return f"but it actually returned {result['actual']!r}"
+    elif "to_print" in expectation:
+        return f"but it actually printed:\n{result['actual']}"
+
+
+def display_expectation_results(results, func):
+    for expectation, result in zip(func.expectations, results):
+        if result["result"] == "pass":
+            print(
+                Fore.GREEN,
+                "✅  ",
+                expectation_string(expectation, func),
+                "\n",
+                Fore.RESET,
+                sep="",
+            )
+        else:
+            print(
+                Fore.RED,
+                "❌  ",
+                expectation_string(expectation, func),
+                "\n",
+                failed_expectation_message(expectation, result),
+                "\n",
+                Fore.RESET,
+                sep="",
+            )
+            sys.exit()
+
+
+@click.command()
+def main():
+    init()
+    sys.path.append(str(Path.cwd()))
+    for python_file in Path.cwd().glob("*.py"):
+        module = import_module(python_file.stem)
+        print(python_file.name, "expectations")
+        for func in tested_functions(module):
+            display_expectation_results(check_expectations(func), func)
+

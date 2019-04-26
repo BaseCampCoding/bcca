@@ -5,10 +5,12 @@ setup(
     version="1.6.1",
     description="Helpers from Base Camp Coding Academy",
     packages=["bcca"],
-    install_requires=["pytest"],
+    install_requires=["pytest", "click", "colorama"],
     entry_points={
-        'pytest11': ['bcca = bcca.pytest_plugin'],
-        'console_scripts': [
-            'what_have_i_done = bcca.what_have_i_done:main',
-        ]
-    })
+        "pytest11": ["bcca = bcca.pytest_plugin"],
+        "console_scripts": [
+            "what_have_i_done = bcca.what_have_i_done:main",
+            "check_expect = bcca.test:main",
+        ],
+    },
+)
