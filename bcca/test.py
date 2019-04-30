@@ -67,9 +67,7 @@ def with_inputs(*inputs):
         def test_ignoring_input(input, *args, **kwargs):
             return test_function(*args, **kwargs)
 
-        return mock.patch("sys.stdin", new_callable=lambda: FakeStdIn(inputs))(
-            test_ignoring_input
-        )
+        return mock.patch("sys.stdin", new_callable=lambda: FakeStdIn(inputs))(test_ignoring_input)
 
     return _inner
 
@@ -151,9 +149,7 @@ def check_expectation(function, expectation_args):
                 if "to_return" in expectation_args:
                     return check_function_returns_correctly(function, expectation_args)
                 elif "to_print" in expectation_args:
-                    return check_function_prints_correctly(
-                        function, expectation_args, fake_stdout
-                    )
+                    return check_function_prints_correctly(function, expectation_args, fake_stdout)
                 elif "to_raise" in expectation_args:
                     return check_function_raises_correctly(function, expectation_args)
                 else:
@@ -167,11 +163,7 @@ def check_function_returns_correctly(function, expectation_args):
     if actual == expectation_args["to_return"]:
         return {"result": "pass"}
     else:
-        return {
-            "result": "fail",
-            "expected": expectation_args["to_return"],
-            "actual": actual,
-        }
+        return {"result": "fail", "expected": expectation_args["to_return"], "actual": actual}
 
 
 def check_function_prints_correctly(function, expectation_args, fake_stdout):
@@ -179,11 +171,7 @@ def check_function_prints_correctly(function, expectation_args, fake_stdout):
     if fake_stdout == expectation_args["to_print"]:
         return {"result": "pass"}
     else:
-        return {
-            "result": "fail",
-            "expected": expectation_args["to_print"],
-            "actual": fake_stdout,
-        }
+        return {"result": "fail", "expected": expectation_args["to_print"], "actual": fake_stdout}
 
 
 def check_function_raises_correctly(function, expectation_args):
@@ -206,9 +194,7 @@ def args_for(function, expectation_args):
 
 
 def passes_expectations(function):
-    return all(
-        expectation["result"] == "pass" for expectation in check_expectations(function)
-    )
+    return all(expectation["result"] == "pass" for expectation in check_expectations(function))
 
 
 def tested_functions(module):
@@ -238,12 +224,7 @@ def display_expectation_results(results, func):
     for expectation, result in zip(func.expectations, results):
         if result["result"] == "pass":
             print(
-                Fore.GREEN,
-                "✅  ",
-                expectation_string(expectation, func),
-                "\n",
-                Fore.RESET,
-                sep="",
+                Fore.GREEN, "✅  ", expectation_string(expectation, func), "\n", Fore.RESET, sep=""
             )
         else:
             print(
@@ -259,6 +240,10 @@ def display_expectation_results(results, func):
             sys.exit()
 
 
+def line_no(func):
+    return func.__code__.co_firstlineno
+
+
 @click.command()
 def main():
     init()
@@ -266,6 +251,6 @@ def main():
     for python_file in Path.cwd().glob("*.py"):
         module = import_module(python_file.stem)
         print(python_file.name, "expectations")
-        for func in tested_functions(module):
+        for func in sorted(tested_functions(module), key=line_no):
             display_expectation_results(check_expectations(func), func)
 
